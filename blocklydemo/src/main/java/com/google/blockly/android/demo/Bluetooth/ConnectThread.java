@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public   class ConnectThread extends Thread {
     public static boolean isConnect=false;
-    public static BluetoothSocket mmSocket;
+    public static BluetoothSocket mmSocket=null;
     private final BluetoothDevice mmDevice;
     BluetoothAdapter mBluetoothAdapter;
     private static final String TAG = "ConnectThread";
@@ -54,12 +54,14 @@ public   class ConnectThread extends Thread {
             msg.what=1;
             handler.sendMessage(msg);
         } catch (IOException connectException) {
+            isConnect=false;
             connectException.printStackTrace();
             Log.d(TAG, "run: 连接错误");
             msg.what=2;
             handler.sendMessage(msg);
             // Unable to connect; close the socket and get out
             try {
+                isConnect=false;
                 mmSocket.close();
             } catch (IOException closeException) {
                 closeException.printStackTrace();
@@ -67,6 +69,7 @@ public   class ConnectThread extends Thread {
             }
             return;
         }catch(Exception e){
+            isConnect=false;
             Log.d(TAG, "run: 出现错误");
             msg.what=2;
             handler.sendMessage(msg);

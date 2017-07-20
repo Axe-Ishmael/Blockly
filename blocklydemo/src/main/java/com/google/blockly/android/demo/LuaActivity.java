@@ -15,10 +15,12 @@
 
 package com.google.blockly.android.demo;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,8 +75,14 @@ public class LuaActivity extends AbstractBlocklyActivity {
                             updateTextMinWidth();
 
                             //当文件已经保存时，生成lua代码
-                            Toast.makeText(LuaActivity.this, "action_run", Toast.LENGTH_SHORT).show();
-                            if (ConnectThread.isConnect) {
+
+                            if (ConnectThread.mmSocket == null || !ConnectThread.mmSocket.isConnected()) {
+
+                                Toast.makeText(LuaActivity.this, "请在本应用中选择并连接蓝牙", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
+                                startActivity(intent);
+
+                            } else {
                                 OutputStream out = null;
                                 try {
                                     out = ConnectThread.mmSocket.getOutputStream();
@@ -83,12 +91,29 @@ public class LuaActivity extends AbstractBlocklyActivity {
                                     Toast.makeText(LuaActivity.this, "传输成功", Toast.LENGTH_SHORT).show();
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                    Toast.makeText(LuaActivity.this, "传输失败", Toast.LENGTH_SHORT).show();
+                                    AlertDialog.Builder dialog = new AlertDialog.Builder
+                                            (LuaActivity.this);
+                                    dialog.setTitle("传输失败了");
+                                    dialog.setMessage("可能是蓝牙连接断开导致，要不试试重新连接蓝牙");
+                                    dialog.setPositiveButton("重连蓝牙", new DialogInterface.
+                                            OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                    dialog.setNegativeButton("取消", new DialogInterface.
+                                            OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    });
+                                    dialog.show();
                                 }
 
-                            } else {
-                                Toast.makeText(LuaActivity.this, "请在本应用中连接蓝牙", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
-                                startActivity(intent);
+
                             }
                         }
                     });

@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.blockly.android.R;
 import com.google.blockly.android.demo.LuaActivity;
 
 import java.util.ArrayList;
@@ -49,7 +48,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
                     break;
                 case 2:
                     progressDialog.dismiss();
-                    Toast.makeText(context, "蓝牙连接失败，请重试(｡•́︿•̀｡)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "蓝牙连接失败，请重试(｡•́︿•̀｡)\n注意：此处只支持" +
+                            "蓝牙模块的蓝牙连接，手机连接不支持哟╥﹏╥", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -82,7 +82,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
 
 
         MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
-                context).inflate(R.layout.item_layout, parent,
+                context).inflate(com.google.blockly.android.R.layout.item_layout, parent,
                 false));
         return holder;
     }
@@ -99,7 +99,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
                 connectThread.start();
                 progressDialog = new ProgressDialog
                         (context);
-                progressDialog.setTitle("正在连接");
+                progressDialog.setTitle("正在连接蓝牙");
                 progressDialog.setMessage("请等待");
                 progressDialog.setCancelable(true);
                 progressDialog.show();
@@ -120,7 +120,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            tv = (TextView) itemView.findViewById(R.id.item_text);
+            tv = (TextView) itemView.findViewById(com.google.blockly.android.R.id.item_text);
         }
     }
 
