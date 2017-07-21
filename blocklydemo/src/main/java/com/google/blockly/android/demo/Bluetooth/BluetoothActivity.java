@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.blockly.android.demo.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class BluetoothActivity extends AppCompatActivity {
     private final static int REQUEST_ENABLE_BT = 1;//打开蓝牙成功与否
     private static final String TAG = "BluetoothActivity";
     int newState;//蓝牙状态
-    Button btOpen, btRestart;
+    Button btBack, btRestart;
     RecyclerView recyclerView;
     ItemAdapter mAdapter;
     List<BluetoothDevice> deviceList;
@@ -38,12 +40,12 @@ public class BluetoothActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     ProgressBar progressBar;
     Handler handler;
-
+    Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(com.google.blockly.android.R.layout.activity_main);
+        setContentView(com.google.blockly.android.R.layout.bluetooth_layout);
         judgeHaveBluetooth();
         init();
         if (mBluetoothAdapter != null) {
@@ -61,26 +63,12 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     private void init() {
-        btOpen = (Button) findViewById(com.google.blockly.android.R.id.button);
+        btBack= (Button) findViewById(R.id.back_bt);
         btRestart = (Button) findViewById(com.google.blockly.android.R.id.bt_reStart);
         recyclerView = (RecyclerView) findViewById(com.google.blockly.android.R.id.list_source);
         progressBar= (ProgressBar) findViewById(com.google.blockly.android.R.id.progress_bar);
 
-        //打开蓝牙
-        btOpen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mBluetoothAdapter != null) {
-                    if (!mBluetoothAdapter.isEnabled()) {
-                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                        progressBar.setVisibility(View.VISIBLE);
-                    }
-                }else{
-                    Toast.makeText(BluetoothActivity.this, "蓝牙已经打开，试试重新扫描吧（ゝω・）", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+
         //重新扫描
         btRestart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,12 +81,25 @@ public class BluetoothActivity extends AppCompatActivity {
                             mAdapter.notifyDataSetChanged();
                         }
                         progressBar.setVisibility(View.VISIBLE);
+                        mBluetoothAdapter.cancelDiscovery();
                         mBluetoothAdapter.startDiscovery();
-                        new Timer(20000).start();
+                        if(timer!=null){
+                            timer.isUseful=false;
+                        }
+                        timer=new Timer(20000);
+                        timer.start();
                     } else {
-                        Toast.makeText(BluetoothActivity.this, "请先打开蓝牙>_<", Toast.LENGTH_SHORT).show();
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                     }
                 }
+            }
+        });
+
+        btBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
@@ -154,9 +155,14 @@ public class BluetoothActivity extends AppCompatActivity {
                             break;
                         case BluetoothAdapter.STATE_ON://表示本地蓝牙适配器已打开，并可以使用。
                             Log.d(TAG, "新状态：" + " 打开");
+
                             mBluetoothAdapter.startDiscovery();//开始扫描
                             progressBar.setVisibility(View.VISIBLE);
-                            new Timer(20000).start();
+                            if(timer!=null){
+                                timer.isUseful=false;
+                            }
+                            timer=new Timer(20000);
+                            timer.start();
                             //Toast.makeText(context, "打开", Toast.LENGTH_SHORT).show();
                             break;
                         case BluetoothAdapter.STATE_TURNING_OFF://表示本地蓝牙适配器已关闭。本地客户端应立即尝试正确断开任何远程链接。
@@ -204,7 +210,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     class Timer extends Thread{
         int time;
-
+        boolean isUseful=true;
         public Timer(int time){
             this.time=time;
         }
@@ -212,15 +218,14 @@ public class BluetoothActivity extends AppCompatActivity {
         public void run() {
             super.run();
             try {
-                //Toast.makeText(BluetoothActivity.this, "开始", Toast.LENGTH_SHORT).show();
                 Thread.sleep(time);
-                //Toast.makeText(BluetoothActivity.this, "结束", Toast.LENGTH_SHORT).show();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            if(isUseful){
             Message msg=new Message();
             msg.what=1;
-            handler.sendMessage(msg);
+            handler.sendMessage(msg);}
         }
     }
 

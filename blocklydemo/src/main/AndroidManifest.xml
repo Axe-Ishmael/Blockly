@@ -60,7 +60,8 @@
         </activity>
 
         <activity android:name=".Bluetooth.BluetoothActivity"
-                  android:launchMode="singleTask"/>
+                  android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"/>
     </application>
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
