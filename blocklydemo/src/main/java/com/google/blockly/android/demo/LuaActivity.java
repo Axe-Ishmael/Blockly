@@ -130,7 +130,8 @@ public class LuaActivity extends AbstractBlocklyActivity {
             return true;
         } else if (id == R.id.action_load) {
             onLoadWorkspace();
-
+            Intent intent=new Intent(LuaActivity.this,DownloadActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_clear) {
             onClearWorkspace();
