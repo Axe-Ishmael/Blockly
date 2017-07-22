@@ -7,4 +7,11 @@
     <color name="blockly_trash_bg">#80808080</color>
     <color name="blockly_edit_text_bg">#80ffffff</color>
     <color name="blockly_spinner_dropdown_bg">#ffeeeeee</color>
+
+    <color name="blue">#3F51B5</color>
+    <color name="blue_light">#8996de</color>
+    <color name="gray">#A1A1A1</color>
+    <color name="gray_light">#CACACA</color>
+    <color name="noColor">#00000000</color>
+
 </resources>
