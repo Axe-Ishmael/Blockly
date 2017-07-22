@@ -18,6 +18,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/textView2"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintRight_toRightOf="parent">
 
         <Button
@@ -30,23 +31,22 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:text="找回密码"
+            android:text="注册"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
     <Button
         android:id="@+id/register_bt"
-        android:layout_width="wrap_content"
+        android:layout_width="70dp"
         android:layout_height="40dp"
         android:textColor="@color/white"
         android:background="@drawable/bt_selector"
-        android:text="修改密码"
-        android:padding="4dp"
+        android:text="注册"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginTop="25dp"
-        app:layout_constraintTop_toBottomOf="@+id/password_et2" />
+        android:layout_marginTop="26dp"
+        app:layout_constraintTop_toBottomOf="@+id/name_et" />
 
 
     <EditText
@@ -61,24 +61,30 @@
         android:ems="10"
         android:inputType="textEmailAddress"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="53dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2" />
+        app:layout_constraintHorizontal_bias="0.465"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout" />
 
     <EditText
         android:id="@+id/password_et1"
         android:background="@drawable/bg_edit"
         android:layout_width="261dp"
-        android:layout_height="39dp"
+        android:layout_height="43dp"
         android:ems="10"
 
-        android:hint="请输入小于20字符的新密码"
+        android:hint="请输入小于20字符的密码"
         android:padding="4dp"
         android:cursorVisible="true"
         android:textCursorDrawable="@null"
         android:inputType="textPassword"
         app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginLeft="53dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.465"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -86,37 +92,55 @@
         android:id="@+id/password_et2"
         android:background="@drawable/bg_edit"
         android:layout_width="261dp"
-        android:layout_height="40dp"
+        android:layout_height="43dp"
         android:paddingTop="4dp"
-        android:hint="再次输入小于20字符的新密码"
+        android:hint="请再次输入小于20字符的密码"
         android:padding="4dp"
         android:cursorVisible="true"
         android:textCursorDrawable="@null"
         android:ems="10"
         android:inputType="textPassword"
-        android:layout_marginTop="22dp"
-        app:layout_constraintTop_toBottomOf="@+id/password_et1"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_marginTop="25dp"
+        app:layout_constraintTop_toBottomOf="@+id/password_et1"
+        android:layout_marginLeft="53dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.465" />
+
+    <EditText
+        android:id="@+id/name_et"
+        android:hint="请输入小于20字符昵称"
+        android:layout_width="261dp"
+        android:layout_height="43dp"
+        android:padding="4dp"
+        android:ems="10"
+        android:background="@drawable/bg_edit"
+        android:layout_marginLeft="53dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="26dp"
+        app:layout_constraintTop_toBottomOf="@+id/password_et2"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.465" />
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="256dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="25dp"
         app:layout_constraintBottom_toTopOf="@+id/password_et1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
         <EditText
             android:id="@+id/code_et"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:layout_height="43dp"
+            android:layout_weight="1"
             android:background="@drawable/bg_edit"
             android:cursorVisible="true"
-            android:ems="10"
             android:hint="输入验证码"
-            android:inputType="textEmailAddress"
             android:padding="4dp"
             android:textCursorDrawable="@null" />
 
@@ -126,9 +150,8 @@
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
             android:background="@drawable/bt_bg_normal"
-            android:padding="4dp"
             android:text="获取验证码"
             android:textColor="@color/white" />
-    </LinearLayout>
 
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

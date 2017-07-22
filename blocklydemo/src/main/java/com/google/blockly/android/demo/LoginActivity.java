@@ -46,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
                 password=passwordEt.getText().toString();
 
 
+                if(email.equals("")){
+                    Toast.makeText(LoginActivity.this, "邮箱不能为空{>~<}", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if(!judgeEmail(email)){
                     Toast.makeText(LoginActivity.this, "邮箱格式不正确请重新输入{>~<}", Toast.LENGTH_SHORT).show();
                     return;
