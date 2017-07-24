@@ -42,4 +42,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile project(':blocklylib-vertical')
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.mcxiaoke.volley:library:1.0.+@aar'
 }
