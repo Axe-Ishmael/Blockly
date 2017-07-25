@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
  */
 
 public class RegisterActivity extends AppCompatActivity {
-    private final String url_mailregister ="http://192.168.0.182:3000/userRegister";
-    private final String url_confirmregister = "http://192.168.0.182:3000/confirmRegister";
+    private final String url_mailregister ="http://192.168.0.121:3000/userRegister";
+    private final String url_confirmregister = "http://192.168.0.121:3000/confirmRegister";
     private EditText emailEt, codeEt, passwordEt1, passwordEt2,nameEt;
     private Button codeBt, registerBt,backBt;
     private String code = "";//验证码
@@ -305,6 +305,8 @@ public class RegisterActivity extends AppCompatActivity {
         if (status.equals("601")){
             Toast.makeText(RegisterActivity.this,errMsg,Toast.LENGTH_SHORT);
             Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+            startActivity(intent);
+            return;
 
         }else if (status.equals("602")){
             Toast.makeText(RegisterActivity.this,errMsg,Toast.LENGTH_LONG);
