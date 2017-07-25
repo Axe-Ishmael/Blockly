@@ -50,7 +50,7 @@
         android:ems="10"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="39dp"
+        android:layout_marginBottom="59dp"
         app:layout_constraintBottom_toTopOf="@+id/password_et" />
 
     <EditText
@@ -66,7 +66,7 @@
         android:inputType="textPassword"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="82dp"
         app:layout_constraintBottom_toTopOf="@+id/login_bt" />
 
     <LinearLayout
@@ -95,7 +95,22 @@
 
     </LinearLayout>
 
-
+    <CheckBox
+        android:id="@+id/savePass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#999797"
+        android:text="保存账号密码"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/login_bt"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/password_et"
+        android:layout_marginLeft="226dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintHorizontal_bias="0.148"/>
 
 
 </android.support.constraint.ConstraintLayout>
