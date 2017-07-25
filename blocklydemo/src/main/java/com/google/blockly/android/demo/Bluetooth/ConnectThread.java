@@ -86,4 +86,28 @@ public   class ConnectThread extends Thread {
             mmSocket.close();
         } catch (IOException e) { }
     }
+
+    private void readMessage() {
+        byte[] buffer = new byte[1024];  // buffer store for the stream
+        int bytes; // bytes returned from read()
+
+        // Keep listening to the InputStream until an exception occurs
+        while (true) {
+            try {
+                if(!mmSocket.isConnected()){
+                    break;
+                }
+                // Read from the InputStream
+                bytes = mmSocket.getInputStream().read(buffer);
+                // Send the obtained bytes to the UI activity
+                String result=new String(buffer);
+                Message msg=new Message();
+                msg.what=456;
+                msg.obj=result;
+                handler.sendMessage(msg);
+            } catch (IOException e) {
+                break;
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.google.blockly.android.demo.Bluetooth;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -7,9 +8,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +55,7 @@ public class BluetoothActivity extends AppCompatActivity {
         if (mBluetoothAdapter != null) {
             initBroadcast();//搜索设备结果的广播
         }
+        requestBluetoothPower();
     }
 
     //判断是否支持蓝牙并初始化BluetoothAdapter
@@ -58,11 +63,12 @@ public class BluetoothActivity extends AppCompatActivity {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //判断设备是否支持蓝牙，不支持就没有后续操作了
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "你的设备不支持蓝牙,无法连接和传输(｡•́︿•̀｡)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "你的设备不支持蓝牙,无法连接和传输(｡•́︿•̀｡)", Toast.LENGTH_LONG).show();
         }
     }
 
     private void init() {
+
         btBack= (Button) findViewById(R.id.back_bt);
         btRestart = (Button) findViewById(com.google.blockly.android.R.id.bt_reStart);
         recyclerView = (RecyclerView) findViewById(com.google.blockly.android.R.id.list_source);
@@ -119,12 +125,30 @@ public class BluetoothActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         mBluetoothAdapter.cancelDiscovery();
                         break;
+                    case 456:
+                        Toast.makeText(BluetoothActivity.this, msg.obj.toString()+"", Toast.LENGTH_SHORT).show();
+                        break;
                     default:
                         break;
                 }
             }
         };
 
+    }
+
+    //请求应用蓝牙所需权限
+    public void requestBluetoothPower() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{
+                                Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            }
+        }
     }
 
     private void initBroadcast() {

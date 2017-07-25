@@ -149,10 +149,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
         } else if (id == R.id.action_run) {
             if (getController().getWorkspace().hasBlocks()) {
                 onRunCode();
-                if(!ConnectThread.isConnect){
-                    Intent intent=new Intent(LuaActivity.this,BluetoothActivity.class);
-                    startActivity(intent);
-                }
+
             } else {
                 Log.i(TAG, "No blocks in workspace. Skipping run request.");
                 Toast.makeText(this, "请先保存文件", Toast.LENGTH_SHORT).show();
