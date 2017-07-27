@@ -89,6 +89,7 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
     private static final String TAG = "AbstractBlocklyActivity";
 
     protected BlocklyActivityHelper mBlocklyActivityHelper;
+    public static String xmltostring;
 
     protected ActionBar mActionBar;
     protected DrawerLayout mDrawerLayout;
@@ -122,9 +123,10 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
         if (id == R.id.action_save) {
 
             onSaveWorkspace(null);
+
             return true;
         } else if (id == R.id.action_load) {
-            onLoadWorkspace();
+            onLoadWorkspace(null);
 
             return true;
         } else if (id == R.id.action_clear) {
@@ -176,15 +178,16 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
      */
     public void onSaveWorkspace(String curfilename) {
         String filename = curfilename+"_"+getWorkspaceSavePath();
-        mBlocklyActivityHelper.saveWorkspaceToAppDirSafely(filename);
+        xmltostring = mBlocklyActivityHelper.saveWorkspaceToAppDirSafely(filename);
+        Log.d("ABS_XML",xmltostring);
     }
 
     /**
      * Called when the user clicks the load action.  Default implementation delegates handling to
      * {@link BlocklyActivityHelper#loadWorkspaceFromAppDir(String)}.
      */
-    public void onLoadWorkspace() {
-        mBlocklyActivityHelper.loadWorkspaceFromAppDirSafely(getWorkspaceSavePath());
+    public void onLoadWorkspace(String fileSavedPath) {
+        mBlocklyActivityHelper.loadWorkspaceFromAppDirSafely(fileSavedPath);
     }
 
     /**

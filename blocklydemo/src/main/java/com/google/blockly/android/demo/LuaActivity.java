@@ -73,13 +73,15 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
 
 
-    private final String url_upload = "http://192.168.0.121:3000/AndrUpload";
-    private final String url_filelistrequest = "http://192.168.0.121:3000/AndrGetList";
+    private final String url_upload = "http://123.207.247.90:3000/AndrUpload";
+    private final String url_filelistrequest = "http://123.207.247.90:3000/AndrGetList";
     protected BlocklyActivityHelper mBlocklyActivityHelper;
 
+    private static int flags = 0;
+
     private SharedPreferences sharedPreferences = MyApplication.getSharedPreferences();
-    private String xmltostring;
-    private String filename;
+//    private String xmltostring;
+    private String filename = "";
     private String userId;
     private String token;
 
@@ -184,12 +186,16 @@ public class LuaActivity extends AbstractBlocklyActivity {
             return true;
         } else if (id == R.id.action_load) {
 //            onLoadWorkspace();
+            /*
             Intent intent=new Intent(LuaActivity.this,DownloadActivity.class);
             startActivity(intent);
             fileContent fileContent = new fileContent();
             fileContent = (fileContent)getIntent().getSerializableExtra("fileContent");
             String fileSavedPath = savexmlString(fileContent);
             onLoadWorkspace(fileSavedPath);
+
+            */
+            fileListRequest();
 
 
 
@@ -327,12 +333,30 @@ public class LuaActivity extends AbstractBlocklyActivity {
         btn_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("SaveButton","点击了");
+                flags = 0;
+                String i = "";
+                i= flags+"";
+                Log.d("Flag_clicked",i);
                 dialogMsg = editText.getText().toString();
                 if(dialogMsg == null){
                     editText.setError("输入内容不能为空！");
+                    Toast.makeText(LuaActivity.this,"Blank",Toast.LENGTH_LONG).show();
                 }else {
+                    flags = 1;
+                    String o = "";
+                    o = flags+"";
+                    Log.d("Flag_save",o);
+                    Log.d("SaveButton","保存");
+
                     onSaveWorkspace(dialogMsg);
+                    andrUpload();
+                    Log.d("SaveButton","执行了");
+//                    andrUpload();
+                    Log.d("Save","执行了");
+
                     alertDialog.dismiss();
+
 
                 }
             }
@@ -341,26 +365,31 @@ public class LuaActivity extends AbstractBlocklyActivity {
         btn_cancle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                flags = 0;
                 alertDialog.dismiss();
             }
         });
 
     }
 
-    @Override
-    public void onSaveWorkspace(String curfilename){
-        filename = curfilename+"_"+getWorkspaceSavePath();
+
+/*
+    public void onSaveWorkspace(String curfilename,int a){
+        String filename = curfilename+"_"+getWorkspaceSavePath();
         xmltostring = mBlocklyActivityHelper.saveWorkspaceToAppDirSafely(filename);
         andrUpload();
     }
+    */
 
 
 
+
+/*
    //@Override
     public void onLoadWorkspace(String fileSavedPath) {
         mBlocklyActivityHelper.loadWorkspaceFromAppDirSafely(fileSavedPath);
     }
-
+*/
 
 
     /**
@@ -372,9 +401,10 @@ public class LuaActivity extends AbstractBlocklyActivity {
         userId = sharedPreferences.getString("email","");
         token = sharedPreferences.getString("token","");
         JSONObject jsonObject = new JSONObject();
+        String fileName = dialogMsg+"_"+getWorkspaceSavePath();
         try{
-            jsonObject.put("fileName",filename);
-            jsonObject.put("fileString",xmltostring);
+            jsonObject.put("fileName",fileName);
+            jsonObject.put("fileString",AbstractBlocklyActivity.xmltostring);//AbstractBlocklyActivity.xmltostring
             jsonObject.put("fileId",0);//这里应该通过一个方法来判断id的值，先暂时写成这样
             jsonObject.put("userId",userId);
             jsonObject.put("token",token);
@@ -434,6 +464,8 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 getListReceive.setJsonObject(response.optJSONObject("jsonStrArray"));
                 Log.d("getFileList_Response",response.toString());
 
+                judge_fileListRequest(getListReceive.getStatus(),getListReceive.getErrMsg(),getListReceive.getJsonObject());
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -441,6 +473,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 Log.e("fileListRequest_Error",error.toString(),error);
             }
         });
+        requestQueue.add(jsonObjectRequest);
     }
 
 
@@ -452,17 +485,17 @@ public class LuaActivity extends AbstractBlocklyActivity {
     public void judge_upload(String status,String errMsg){
 
         if (status.equals("201")){
-            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
             return;
 
         }else if (status.equals("202")){
-            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
             return;
         }else if(status.equals("603")){
-            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
             return;
         }else {
-            Toast.makeText(LuaActivity.this,"发生未知错误！",Toast.LENGTH_LONG);
+            Toast.makeText(LuaActivity.this,"发生未知错误！",Toast.LENGTH_LONG).show();
 
         }
 
@@ -484,7 +517,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
             Bundle bundle = new Bundle();
             bundle.putSerializable("listContents", fileListContents);
             intent.putExtras(bundle);
-            startActivity(intent);
+            startActivityForResult(intent,0);
 
 
             Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
@@ -548,15 +581,20 @@ public class LuaActivity extends AbstractBlocklyActivity {
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case RESULT_OK:
+                Bundle bundle = data.getExtras();
+                fileContent fileContent = new fileContent();
+                fileContent = (fileContent)data.getExtras().getSerializable("fileContent");
+                String fileSavedPath = savexmlString(fileContent);
+                onLoadWorkspace(fileSavedPath);
+                break;
 
-
-
-
-
-
-
-
-
+        }
+    }
 
     /**
      * 待用蓝牙模块

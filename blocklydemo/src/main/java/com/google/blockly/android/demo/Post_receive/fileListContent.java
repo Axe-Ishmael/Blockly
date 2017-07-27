@@ -1,10 +1,12 @@
 package com.google.blockly.android.demo.Post_receive;
 
+import java.io.Serializable;
+
 /**
  * Created by admin on 2017/7/25.
  */
 
-public class fileListContent {
+public class fileListContent implements Serializable{
     public String fileId;
     public String fileName;
 
