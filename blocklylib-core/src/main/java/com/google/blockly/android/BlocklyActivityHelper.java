@@ -212,7 +212,7 @@ public class BlocklyActivityHelper {
      * status toast. If the save fails, the error is logged.
      * @return True if the save was successful. Otherwise false.
      */
-    public boolean saveWorkspaceToAppDirSafely(String filename) {
+    public String saveWorkspaceToAppDirSafely(String filename) {
         try {
 
             /*
@@ -240,13 +240,13 @@ public class BlocklyActivityHelper {
             Log.d("XMLtoString",xmltoString);
 
 
-            return true;
+            return xmltoString;
         } catch (FileNotFoundException | BlocklySerializerException e) {
 
             Toast.makeText(mActivity, R.string.toast_workspace_not_saved,
                     Toast.LENGTH_LONG).show();
             Log.e(TAG, "Failed to save workspace to " + curfilename, e);
-            return false;
+            return "";
         }
     }
 
@@ -847,6 +847,15 @@ public class BlocklyActivityHelper {
 
 
         return dialogMsg;
+
+    }
+
+    /**
+     * 用于上传XML String的网络请求
+     */
+    public void AndrUpload(String xmlString){
+
+
 
     }
 

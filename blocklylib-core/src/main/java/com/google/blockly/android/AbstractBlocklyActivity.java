@@ -46,7 +46,6 @@ import com.google.blockly.model.DefaultBlocks;
 import com.google.blockly.model.Mutator;
 import com.google.blockly.utils.BlockLoadingException;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -535,6 +534,7 @@ public abstract class AbstractBlocklyActivity extends AppCompatActivity {
         if (mNavigationDrawer != null) {
             setupAppNaviagtionDrawer();
         }
+
     }
 
     /**
