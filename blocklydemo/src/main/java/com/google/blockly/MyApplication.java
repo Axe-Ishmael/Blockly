@@ -10,7 +10,7 @@ import com.android.volley.toolbox.Volley;
  * Created by admin on 2017/7/24.
  */
 
-public class MyApplication extends Application {
+public  class  MyApplication extends Application {
 
     private static RequestQueue requestQueue;
     private static SharedPreferences sharedPreferences;

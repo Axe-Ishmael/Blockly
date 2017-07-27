@@ -18,8 +18,10 @@ package com.google.blockly.android.demo;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -31,15 +33,34 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.blockly.MyApplication;
 import com.google.blockly.android.AbstractBlocklyActivity;
+import com.google.blockly.android.BlocklyActivityHelper;
 import com.google.blockly.android.codegen.CodeGenerationRequest;
 import com.google.blockly.android.codegen.LanguageDefinition;
 import com.google.blockly.android.demo.Bluetooth.BluetoothActivity;
 import com.google.blockly.android.demo.Bluetooth.ConnectThread;
+import com.google.blockly.android.demo.Post_receive.fileContent;
+import com.google.blockly.android.demo.Post_receive.fileListContent;
+import com.google.blockly.android.demo.Post_receive.getListReceive;
+import com.google.blockly.android.demo.Post_receive.uploadReceive;
 import com.google.blockly.model.DefaultBlocks;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +70,18 @@ import java.util.List;
  * and an arbitrary other view or fragment.
  */
 public class LuaActivity extends AbstractBlocklyActivity {
+
+
+
+    private final String url_upload = "http://192.168.0.121:3000/AndrUpload";
+    private final String url_filelistrequest = "http://192.168.0.121:3000/AndrGetList";
+    protected BlocklyActivityHelper mBlocklyActivityHelper;
+
+    private SharedPreferences sharedPreferences = MyApplication.getSharedPreferences();
+    private String xmltostring;
+    private String filename;
+    private String userId;
+    private String token;
 
     public Button btn_save,btn_cancle;
     public EditText editText;
@@ -70,6 +103,17 @@ public class LuaActivity extends AbstractBlocklyActivity {
     static String LuaLanguage;//保存输出的Lua语言代码
 
     private String mNoCodeText;
+
+    private Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what==789){
+                Toast.makeText(LuaActivity.this, msg.obj.toString()+"", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
 
     CodeGenerationRequest.CodeGeneratorCallback mCodeGeneratorCallback =
             new CodeGenerationRequest.CodeGeneratorCallback() {
@@ -139,9 +183,16 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
             return true;
         } else if (id == R.id.action_load) {
-            onLoadWorkspace();
+//            onLoadWorkspace();
             Intent intent=new Intent(LuaActivity.this,DownloadActivity.class);
             startActivity(intent);
+            fileContent fileContent = new fileContent();
+            fileContent = (fileContent)getIntent().getSerializableExtra("fileContent");
+            String fileSavedPath = savexmlString(fileContent);
+            onLoadWorkspace(fileSavedPath);
+
+
+
             return true;
         } else if (id == R.id.action_clear) {
             onClearWorkspace();
@@ -167,6 +218,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
         super.onCreate(savedInstanceState);
 
         mHandler = new Handler();
+        //initReadBluethThread();
     }
 
     @Override
@@ -293,9 +345,255 @@ public class LuaActivity extends AbstractBlocklyActivity {
             }
         });
 
+    }
 
+    @Override
+    public void onSaveWorkspace(String curfilename){
+        filename = curfilename+"_"+getWorkspaceSavePath();
+        xmltostring = mBlocklyActivityHelper.saveWorkspaceToAppDirSafely(filename);
+        andrUpload();
+    }
+
+
+
+   //@Override
+    public void onLoadWorkspace(String fileSavedPath) {
+        mBlocklyActivityHelper.loadWorkspaceFromAppDirSafely(fileSavedPath);
+    }
+
+
+
+    /**
+     * 用于保存XML文件的网络请求
+     */
+    public void andrUpload(){
+        RequestQueue requestQueue = MyApplication.getRequestQueue();
+        sharedPreferences = MyApplication.getSharedPreferences();
+        userId = sharedPreferences.getString("email","");
+        token = sharedPreferences.getString("token","");
+        JSONObject jsonObject = new JSONObject();
+        try{
+            jsonObject.put("fileName",filename);
+            jsonObject.put("fileString",xmltostring);
+            jsonObject.put("fileId",0);//这里应该通过一个方法来判断id的值，先暂时写成这样
+            jsonObject.put("userId",userId);
+            jsonObject.put("token",token);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        Log.d("AndrUpload_JsonObj",jsonObject.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_upload, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                uploadReceive uploadReceive = new uploadReceive();
+                uploadReceive.setStatus(response.optString("status"));
+                uploadReceive.setErrMsg(response.optString("errMsg"));
+                Log.d("AndrUpload_Response",response.toString());
+
+                judge_upload(uploadReceive.getStatus(),uploadReceive.getErrMsg());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("AndrUpload_Error",error.toString(),error);
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
 
     }
+
+
+    /**
+     * 用户请求文件列表的网络通信
+     */
+    public void fileListRequest(){
+        String userId = sharedPreferences.getString("email","");
+        String token  = sharedPreferences.getString("token","");
+        RequestQueue requestQueue = MyApplication.getRequestQueue();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userId",userId);
+            jsonObject.put("token",token);
+            Log.d("fileListRequest_JsonObj",jsonObject.toString());
+
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_filelistrequest, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                getListReceive getListReceive = new getListReceive();
+                getListReceive.setStatus(response.optString("status"));
+                getListReceive.setErrMsg(response.optString("errMsg"));
+                getListReceive.setJsonObject(response.optJSONObject("jsonStrArray"));
+                Log.d("getFileList_Response",response.toString());
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("fileListRequest_Error",error.toString(),error);
+            }
+        });
+    }
+
+
+
+
+    /**
+     * 用于对AndrUpload事件返回值作出判断
+     */
+    public void judge_upload(String status,String errMsg){
+
+        if (status.equals("201")){
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            return;
+
+        }else if (status.equals("202")){
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            return;
+        }else if(status.equals("603")){
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG);
+            return;
+        }else {
+            Toast.makeText(LuaActivity.this,"发生未知错误！",Toast.LENGTH_LONG);
+
+        }
+
+    }
+
+    /**
+     * 用于对fileListRequest事件的返回值做出判断
+     */
+    public void judge_fileListRequest(String status, String errMsg,JSONObject jsonObject){
+
+        if (status.equals("200")){
+            //此处添加获取JsonArray内容的方法
+            //要将fileListContents传往DownLoadActivity
+//            List<fileListContent> fileListContents = new ArrayList<fileListContent>();//获取jsonArray中的内容
+            ArrayList<fileListContent> fileListContents = new ArrayList<fileListContent>();
+            fileListContents = getfilelistContent(jsonObject);
+            Intent intent = new Intent();
+            intent.setClass(LuaActivity.this,DownloadActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("listContents", fileListContents);
+            intent.putExtras(bundle);
+            startActivity(intent);
+
+
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
+        }else if (status.equals("601")){
+            Toast.makeText(LuaActivity.this,errMsg,Toast.LENGTH_LONG).show();
+            return;
+
+        }else {
+            Toast.makeText(LuaActivity.this,"发生未知错误！",Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+
+    /**
+     * 获取JSONObject对象中的JSONArray的内容
+     *
+     */
+
+    public ArrayList<fileListContent> getfilelistContent(JSONObject jsonObject){
+
+        ArrayList<fileListContent> fileListContents = new ArrayList<fileListContent>();
+        JSONArray jsonArray = jsonObject.optJSONArray("fileList");
+        for (int i = 0;i < jsonArray.length();i++){
+            JSONObject jsonObject1 = (JSONObject) jsonArray.opt(i);
+            fileListContent fileListContent = new fileListContent();
+            fileListContent.setFileId(jsonObject1.optString("fileId"));
+            fileListContent.setFileName(jsonObject1.optString("fileName"));
+            fileListContents.add(fileListContent);
+        }
+
+        return fileListContents;
+    }
+
+    /**
+     * 存储下载的XML文件（String to XML）并返回文件名
+     */
+    public String savexmlString(fileContent fileContent){
+        String fileName = fileContent.getFileName();
+        String fileId = fileContent.getFileId();
+        String xmlString = fileContent.getFileData();
+        FileOutputStream fileOutputStream = null;
+        BufferedWriter writer  = null;
+        try{
+            fileOutputStream = openFileOutput(fileName,MODE_PRIVATE);
+            writer = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
+            writer.write(xmlString);
+        }catch (IOException e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if(writer != null){
+                    writer.close();
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
+        return fileName;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 待用蓝牙模块
+     */
+    private void initReadBluethThread() {
+
+
+
+        new Thread() {
+            // Keep listening to the InputStream until an exception occurs
+
+            @Override
+            public void run() {
+                super.run();
+                while(true){
+                    byte[] buffer = new byte[1024];  // buffer store for the stream
+                    try {
+                        if (ConnectThread.mmSocket != null && ConnectThread.mmSocket.isConnected()) {
+
+                            // Read from the InputStream
+                            ConnectThread.mmSocket.getInputStream().read(buffer);
+                            // Send the obtained bytes to the UI activity
+                            String result = new String(buffer);
+                            Message msg=new Message();
+                            msg.what=789;
+                            msg.obj=result;
+                            handler.sendMessage(msg);
+                        }
+                    } catch (IOException e) {
+                        break;
+                    }
+                }
+            }
+        }.start();
+    }
+
+
 
 
 }

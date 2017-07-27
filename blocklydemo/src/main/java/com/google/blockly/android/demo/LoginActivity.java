@@ -107,9 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-//                Intent intent=new Intent(LoginActivity.this,LuaActivity.class);
-//                startActivity(intent);
-                userLogin();
+                Intent intent=new Intent(LoginActivity.this,LuaActivity.class);
+               startActivity(intent);
+//                userLogin();
 
             }
         });
