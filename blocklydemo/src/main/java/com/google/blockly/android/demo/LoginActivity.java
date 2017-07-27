@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     public static String token;
-    private final String url_login = "http://192.168.0.121:3000/userLogin";
+    private final String url_login = "http://123.207.247.90:3000/userLogin";
 
     private boolean choseSavePass;
     private boolean choseAutoLogin;
@@ -107,9 +107,9 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                Intent intent=new Intent(LoginActivity.this,LuaActivity.class);
-               startActivity(intent);
-//                userLogin();
+//                Intent intent=new Intent(LoginActivity.this,LuaActivity.class);
+//                startActivity(intent);
+                userLogin();
 
             }
         });

@@ -39,8 +39,8 @@ import java.util.List;
 
 public class DownloadActivity extends AppCompatActivity {
 
-    private final String url_delete = "http://192.168.0.121:3000/AndrDelete";
-    private final String url_download = "http://192.168.0.121:3000/AndrDownload";
+    private final String url_delete = "http://123.207.247.90:3000/AndrDelete";
+    private final String url_download = "http://123.207.247.90:3000/AndrDownload";
     private RecyclerView recyclerView;
     private Button btReturn;
     private Intent intent ;
@@ -58,7 +58,7 @@ public class DownloadActivity extends AppCompatActivity {
         setContentView(R.layout.download_layout);
 //        sharedPreferences = MyApplication.getSharedPreferences();
         fileListContents= new ArrayList<fileListContent>();
-        fileListContents = (ArrayList<fileListContent>)getIntent().getSerializableExtra("listContent");
+        fileListContents = (ArrayList<fileListContent>)getIntent().getSerializableExtra("listContents");
         init();
     }
 
@@ -73,18 +73,16 @@ public class DownloadActivity extends AppCompatActivity {
         });
         recyclerView= (RecyclerView) findViewById(R.id.rv_download);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        List <String>list=new ArrayList<>();
-        for(int i=0;i<15;i++)
-            list.add("文件"+i);
-        recyclerView.setAdapter(new ItemAdapter(list));
+
+        recyclerView.setAdapter(new ItemAdapter(fileListContents));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
     }
 
     class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder>{
-        List<String>dataList;
+        List<fileListContent>dataList;
 
-        ItemAdapter(List<String>dataList){
+        ItemAdapter(List<fileListContent>dataList){
             this.dataList=dataList;
         }
 
@@ -363,8 +361,11 @@ public class DownloadActivity extends AppCompatActivity {
             Intent intent = new Intent();
             bundle.putSerializable("fileContent",fileContent);
             intent.putExtras(bundle);
-            intent.setClass(DownloadActivity.this,LuaActivity.class);
-            startActivity(intent);
+//            intent.setClass(DownloadActivity.this,LuaActivity.class);
+//            startActivity(intent);
+            this.setResult(RESULT_OK,intent);
+            this.finish();
+            Log.d("Finish","finishi()");
 
 
         }else if (status.equals("601")){

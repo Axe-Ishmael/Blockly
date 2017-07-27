@@ -103,6 +103,8 @@ public class BlocklyActivityHelper {
     protected Button btn_save,btn_cancle;
     protected EditText editText;
 
+
+//    public static String xmltostring;
     protected Context mContext;
     protected WorkspaceHelper mWorkspaceHelper;
     protected BlockViewFactory mBlockViewFactory;
@@ -216,7 +218,6 @@ public class BlocklyActivityHelper {
         try {
 
             /*
-
             String  curname;
             curname = showAlertDialog(mActivity);
 
@@ -236,11 +237,11 @@ public class BlocklyActivityHelper {
             Toast.makeText(mActivity, "文件已保存在："+mActivity.getFilesDir().toString()+"/"+filename,
                     Toast.LENGTH_LONG).show();
             //xmltoString 已将xml文件转为String类型
-            String xmltoString = xmltoString(mActivity.getFilesDir().toString()+"/"+filename);
-            Log.d("XMLtoString",xmltoString);
+            String xmltostring = xmltoString(mActivity.getFilesDir().toString()+"/"+filename);
+            Log.d("XMLtoString",xmltostring);
 
 
-            return xmltoString;
+            return xmltostring;
         } catch (FileNotFoundException | BlocklySerializerException e) {
 
             Toast.makeText(mActivity, R.string.toast_workspace_not_saved,
