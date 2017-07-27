@@ -30,8 +30,8 @@ import java.util.regex.Pattern;
  */
 
 public class RegisterActivity extends AppCompatActivity {
-    private final String url_mailregister ="http://192.168.0.121:3000/userRegister";
-    private final String url_confirmregister = "http://192.168.0.121:3000/confirmRegister";
+    private final String url_mailregister ="http://123.207.247.90:3000/userRegister";
+    private final String url_confirmregister = "http://123.207.247.90:3000/confirmRegister";
     private EditText emailEt, codeEt, passwordEt1, passwordEt2,nameEt;
     private Button codeBt, registerBt,backBt;
     private String code = "";//验证码
