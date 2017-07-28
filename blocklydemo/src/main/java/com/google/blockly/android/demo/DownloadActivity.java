@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Htw on 2017/7/21.
+ *
  */
 
 public class DownloadActivity extends AppCompatActivity {
