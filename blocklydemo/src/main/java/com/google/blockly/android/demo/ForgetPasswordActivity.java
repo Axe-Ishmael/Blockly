@@ -26,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Htw on 2017/7/21.
+ *
  */
 
 public class ForgetPasswordActivity extends AppCompatActivity {
