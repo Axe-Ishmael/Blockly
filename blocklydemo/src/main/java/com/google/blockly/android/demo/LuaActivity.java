@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +79,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
     protected BlocklyActivityHelper mBlocklyActivityHelper;
 
     private static int flags = 0;
+    private boolean tag = true;
 
     private SharedPreferences sharedPreferences = MyApplication.getSharedPreferences();
 //    private String xmltostring;
@@ -181,6 +183,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
         if (id == R.id.action_save) {
 
+            hideView();
             showAlertDialog(LuaActivity.this);
 
             return true;
@@ -214,6 +217,9 @@ public class LuaActivity extends AbstractBlocklyActivity {
             return true;
         } else if (id == android.R.id.home && mNavigationDrawer != null) {
             setNavDrawerOpened(!isNavDrawerOpen());
+        }else if (id == R.id.action_showcode){
+
+            hideView();
         }
 
         return super.onOptionsItemSelected(item);
@@ -629,6 +635,20 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 }
             }
         }.start();
+    }
+
+    /**
+     * 测试TextView消失
+     */
+    public void hideView(){
+        RelativeLayout relativeLayout = (RelativeLayout)findViewById(R.id.textView_Layout);
+        if (tag){
+            relativeLayout.setVisibility(View.GONE);
+            tag = false;
+        }else {
+            relativeLayout.setVisibility(View.VISIBLE);
+            tag = true;
+        }
     }
 
 

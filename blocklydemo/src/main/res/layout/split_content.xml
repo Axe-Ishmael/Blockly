@@ -11,14 +11,22 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         >
-        <include layout="@layout/blockly_unified_workspace" />
+
+        <include layout="@layout/blockly_unified_workspace"/>
     </FrameLayout>
 
-    <TextView android:id="@+id/generated_code"
+    <RelativeLayout
+        android:id="@+id/textView_Layout"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content">
+    <TextView
+        android:clickable="true"
+        android:id="@+id/generated_code"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:text="@string/split_generate_message"
         android:textIsSelectable="true"
         />
+    </RelativeLayout>
 </LinearLayout>

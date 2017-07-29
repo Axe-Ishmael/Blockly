@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
 /**
  * 
  */
-
 public class RegisterActivity extends AppCompatActivity {
     private final String url_mailregister ="http://123.207.247.90:3000/userRegister";
     private final String url_confirmregister = "http://123.207.247.90:3000/confirmRegister";
@@ -82,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "输入邮箱不能为空", Toast.LENGTH_SHORT).show();
                     return;
                 }else {
-                    mailRegister();
+                        mailRegister();
                 }
 
             }

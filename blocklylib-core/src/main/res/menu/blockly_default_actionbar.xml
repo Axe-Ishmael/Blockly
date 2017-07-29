@@ -13,4 +13,8 @@
     <item android:id="@+id/action_run" android:title="@string/action_run"
           android:orderInCategory="15" app:showAsAction="ifRoom"
         android:icon="@drawable/ic_play_arrow_white_24dp"/>
+    <item android:id="@+id/action_showcode" android:title="Code"
+          android:orderInCategory="16" app:showAsAction="ifRoom"
+          android:icon="@drawable/light"
+        />
 </menu>
