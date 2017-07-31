@@ -214,6 +214,8 @@ public class DownloadActivity extends AppCompatActivity {
             return dataList.size();
         }
 
+
+
         class MyViewHolder extends RecyclerView.ViewHolder {
 
             TextView fileNameTv;
