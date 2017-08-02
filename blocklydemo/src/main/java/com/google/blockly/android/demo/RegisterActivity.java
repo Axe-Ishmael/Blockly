@@ -204,7 +204,7 @@ public class RegisterActivity extends AppCompatActivity {
      * 用于确认邮箱，获取验证码
      * @author Axe
      */
-    public void mailRegister(){
+        public void mailRegister(){
         final RequestQueue requestQueue = MyApplication.getRequestQueue();
         JSONObject jsonObject = new JSONObject();
         String email = emailEt.getText().toString();
