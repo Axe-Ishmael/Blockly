@@ -185,17 +185,6 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
         if (id == R.id.action_save) {
 
-
-            //            onLoadWorkspace();
-            /*
-            Intent intent=new Intent(LuaActivity.this,DownloadActivity.class);
-            startActivity(intent);
-            fileContent fileContent = new fileContent();
-            fileContent = (fileContent)getIntent().getSerializableExtra("fileContent");
-            String fileSavedPath = savexmlString(fileContent);
-            onLoadWorkspace(fileSavedPath);
-
-            */
             fileListRequest();
 
             return true;
@@ -353,6 +342,7 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 Log.d("UpdateClick",returnedFileName+"   "+String.valueOf(returnedFileId));
                 if (returnedFileName != null&&returnedFileName != "")
                 {
+                    onSaveWorkspace(returnedFileName);
                     andrUpdate(returnedFileName,returnedFileId);
                     alertDialog.dismiss();
                 }else {
