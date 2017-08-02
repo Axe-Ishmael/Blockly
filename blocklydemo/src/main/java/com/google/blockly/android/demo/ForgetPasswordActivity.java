@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 
 public class ForgetPasswordActivity extends AppCompatActivity {
 
-    private final String url_mailForget = "http://123.207.247.90:3000/forgetPassword";
-    private final String url_resetPassword = "http://123.207.247.90:3000/resetPassword";
+    private final String url_mailForget = "http://120.77.254.208:3000/forgetPassword";
+    private final String url_resetPassword = "http://120.77.254.208:3000/resetPassword";
     private EditText emailEt, codeEt, passwordEt1, passwordEt2;
     private Button codeBt, registerBt,backBt;
     private String code = "";//验证码
