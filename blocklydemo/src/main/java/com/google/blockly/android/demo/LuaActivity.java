@@ -74,8 +74,8 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
 
 
-    private final String url_upload = "http://123.207.247.90:3000/AndrUpload";
-    private final String url_filelistrequest = "http://123.207.247.90:3000/AndrGetList";
+    private final String url_upload = "http://120.77.254.208:3000/AndrUpload";
+    private final String url_filelistrequest = "http://120.77.254.208:3000/AndrGetList";
     protected BlocklyActivityHelper mBlocklyActivityHelper;
 
     private static int flags = 0;
@@ -87,9 +87,11 @@ public class LuaActivity extends AbstractBlocklyActivity {
     private String userId;
     private String token;
 
-    public Button btn_save,btn_cancle;
+    public Button btn_save,btn_cancle,btn_update,btn_newBuild;
     public EditText editText;
     public String dialogMsg = "";
+    private String returnedFileName = "";
+    private String returnedFileId;
 
     private static final String TAG = "LuaActivity";
 
@@ -183,12 +185,8 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
         if (id == R.id.action_save) {
 
-            hideView();
-            showAlertDialog(LuaActivity.this);
 
-            return true;
-        } else if (id == R.id.action_load) {
-//            onLoadWorkspace();
+            //            onLoadWorkspace();
             /*
             Intent intent=new Intent(LuaActivity.this,DownloadActivity.class);
             startActivity(intent);
@@ -200,6 +198,13 @@ public class LuaActivity extends AbstractBlocklyActivity {
             */
             fileListRequest();
 
+            return true;
+        } else if (id == R.id.action_load) {
+
+
+            hideView();
+            //showAlertDialog(LuaActivity.this);
+            showChoseWay(LuaActivity.this);
 
 
             return true;
@@ -323,6 +328,46 @@ public class LuaActivity extends AbstractBlocklyActivity {
     }
 
     /**
+     * 提示用户选择保存方式
+     */
+    public void showChoseWay(final Activity mActivity){
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setView(LayoutInflater.from(mActivity).inflate(R.layout.alert_chose,null));
+        final AlertDialog alertDialog  = builder.create();
+        alertDialog.show();
+        alertDialog.getWindow().setContentView(R.layout.alert_chose);
+        btn_update = (Button)alertDialog.findViewById(R.id.btn_update);
+        btn_newBuild = (Button)alertDialog.findViewById(R.id.btn_newBuild);
+        btn_newBuild.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlertDialog(mActivity);
+                alertDialog.dismiss();
+            }
+        });
+
+        btn_update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Log.d("UpdateClick",returnedFileName+"   "+String.valueOf(returnedFileId));
+                if (returnedFileName != null&&returnedFileName != "")
+                {
+                    andrUpdate(returnedFileName,returnedFileId);
+                    alertDialog.dismiss();
+                }else {
+                    Toast.makeText(LuaActivity.this,"该文件尚未保存，请先新建保存",Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+        });
+    }
+
+
+
+
+    /**
      * 提示用户填写文件保存名
      */
     public void showAlertDialog(Activity mActivity){
@@ -434,6 +479,49 @@ public class LuaActivity extends AbstractBlocklyActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("AndrUpload_Error",error.toString(),error);
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+    }
+
+    /**
+     * 用于更新XML文件的网络请求
+     */
+    public void andrUpdate(String returnedFileName,String returnedFileId){
+        RequestQueue requestQueue = MyApplication.getRequestQueue();
+        sharedPreferences = MyApplication.getSharedPreferences();
+        userId = sharedPreferences.getString("email","");
+        token = sharedPreferences.getString("token","");
+        JSONObject jsonObject = new JSONObject();
+        String fileName = dialogMsg+"_"+getWorkspaceSavePath();
+        try{
+            jsonObject.put("fileName",returnedFileName);
+            jsonObject.put("fileString",AbstractBlocklyActivity.xmltostring);//AbstractBlocklyActivity.xmltostring
+            jsonObject.put("fileId",returnedFileId);//这里应该通过一个方法来判断id的值，先暂时写成这样
+            jsonObject.put("userId",userId);
+            jsonObject.put("token",token);
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        Log.d("AndrUpdate_JsonObj",jsonObject.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_upload, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                uploadReceive uploadReceive = new uploadReceive();
+                uploadReceive.setStatus(response.optString("status"));
+                uploadReceive.setErrMsg(response.optString("errMsg"));
+                Log.d("AndrUpdate_Response",response.toString());
+
+                judge_upload(uploadReceive.getStatus(),uploadReceive.getErrMsg());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("AndrUpdate_Error",error.toString(),error);
             }
         });
 
@@ -595,6 +683,9 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 Bundle bundle = data.getExtras();
                 fileContent fileContent = new fileContent();
                 fileContent = (fileContent)data.getExtras().getSerializable("fileContent");
+                returnedFileName = fileContent.getFileName();
+                returnedFileId = fileContent.getFileId();
+                Log.d("DownLoadContent",returnedFileName);
                 String fileSavedPath = savexmlString(fileContent);
                 onLoadWorkspace(fileSavedPath);
                 break;

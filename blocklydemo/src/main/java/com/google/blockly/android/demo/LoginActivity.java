@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     public static String token;
-    private final String url_login = "http://123.207.247.90:3000/userLogin";
+    private final String url_login = "http://120.77.254.208:3000/userLogin";
 
     private boolean choseSavePass;
     private boolean choseAutoLogin;
@@ -177,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                 userLoginReceive.setErrMsg(response.optString("eerMsg"));
                 userLoginReceive.setToken(response.optString("token"));
                 userLoginReceive.setJsonObject(response.optJSONObject("jsonStr"));
-                Log.d("userLogin_response",userLoginReceive.getStatus()+" "+userLoginReceive.getErrMsg()+" "+userLoginReceive.getToken());
+                Log.d("userLogin_response",userLoginReceive.getStatus()+" "+"errMsg:"+userLoginReceive.getErrMsg()+" "+userLoginReceive.getToken());
 
                 judge_userLogin(userLoginReceive.getStatus(),userLoginReceive.getErrMsg(),userLoginReceive.getToken(),userLoginReceive.getJsonObject());
             }

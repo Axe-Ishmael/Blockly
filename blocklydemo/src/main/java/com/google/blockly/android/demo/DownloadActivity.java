@@ -39,8 +39,8 @@ import java.util.List;
 
 public class DownloadActivity extends AppCompatActivity {
 
-    private final String url_delete = "http://123.207.247.90:3000/AndrDelete";
-    private final String url_download = "http://123.207.247.90:3000/AndrDownload";
+    private final String url_delete = "http://120.77.254.208:3000/AndrDelete";
+    private final String url_download = "http://120.77.254.208:3000/AndrDownload";
     private RecyclerView recyclerView;
     private Button btReturn;
     private Intent intent ;
@@ -87,87 +87,87 @@ public class DownloadActivity extends AppCompatActivity {
         }
 
 
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
-                    DownloadActivity.this).inflate(R.layout.download_item, parent,
-                    false));
+                            @Override
+                            public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                                MyViewHolder holder = new MyViewHolder(LayoutInflater.from(
+                                        DownloadActivity.this).inflate(R.layout.download_item, parent,
+                                        false));
 
-            return holder;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int position) {
-            
-            holder.fileIdTv.setText(fileListContents.get(position).getFileId());
-            holder.fileNameTv.setText(fileListContents.get(position).getFileName());
-
-
-            /**
-             * 删除按钮响应事件
-             */
-            holder.deleteBt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(DownloadActivity.this, "", Toast.LENGTH_SHORT).show();
-                    deleteId =holder.fileIdTv.getText().toString();
-
-                    sharedPreferences = MyApplication.getSharedPreferences();
-                    RequestQueue requestQueue = MyApplication.getRequestQueue();
-                    userId = sharedPreferences.getString("email","");
-                    token = sharedPreferences.getString("token","");
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-
-                        jsonObject.put("fileId",deleteId);
-                        jsonObject.put("userId",userId);
-                        jsonObject.put("token",token);
-
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                    }
-
-
-                    JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_delete, jsonObject, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-
-                            String status;
-                            String errMsg;
-                            deleteReceive deleteReceive = new deleteReceive();
-                            deleteReceive.setStatus(response.optString("status"));
-                            deleteReceive.setErrMsg(response.optString("errMsg"));
-                            deleteReceive.setJsonObject(response.optJSONObject("jsonStr"));//此处获取的Json对象暂时不用，为以后做扩展做准备
-                            Log.d("delete_Response",response.toString());
-                            status = deleteReceive.getStatus();
-                            errMsg = deleteReceive.getErrMsg();
-
-                            if (status.equals("200")){
-
-                                Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
-                                //添加使该项消失的方法
-                                fileListContents.remove(position);
-                                notifyItemRemoved(position);
-
-
-                            }else if (status.equals("601")){
-
-                                Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
-                                return;
-                            }else if (status.equals("602")){
-
-                                Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
-                                return;
-
-                            }else {
-                                Toast.makeText(DownloadActivity.this, "发生未知错误！", Toast.LENGTH_SHORT).show();
-
+                                return holder;
                             }
 
+                            @Override
+                            public void onBindViewHolder(final MyViewHolder holder, final int position) {
+
+                                holder.fileIdTv.setText(fileListContents.get(position).getFileId());
+                                holder.fileNameTv.setText(fileListContents.get(position).getFileName());
+
+
+                                /**
+                                 * 删除按钮响应事件
+                                 */
+                                holder.deleteBt.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(DownloadActivity.this, "", Toast.LENGTH_SHORT).show();
+                                        deleteId =holder.fileIdTv.getText().toString();
+
+                                        sharedPreferences = MyApplication.getSharedPreferences();
+                                        RequestQueue requestQueue = MyApplication.getRequestQueue();
+                                        userId = sharedPreferences.getString("email","");
+                                        token = sharedPreferences.getString("token","");
+                                        JSONObject jsonObject = new JSONObject();
+                                        try {
+
+                                            jsonObject.put("fileId",deleteId);
+                                            jsonObject.put("userId",userId);
+                                            jsonObject.put("token",token);
+
+                                        }catch (JSONException e){
+                                            e.printStackTrace();
+                                        }
+
+
+                                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_delete, jsonObject, new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+
+                                                String status;
+                                                String errMsg;
+                                                deleteReceive deleteReceive = new deleteReceive();
+                                                deleteReceive.setStatus(response.optString("status"));
+                                                deleteReceive.setErrMsg(response.optString("errMsg"));
+                                                deleteReceive.setJsonObject(response.optJSONObject("jsonStr"));//此处获取的Json对象暂时不用，为以后做扩展做准备
+                                                Log.d("delete_Response",response.toString());
+                                                status = deleteReceive.getStatus();
+                                                errMsg = deleteReceive.getErrMsg();
+
+                                                if (status.equals("200")){
+
+                                                    Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
+                                                    //添加使该项消失的方法
+                                                    fileListContents.remove(position);
+                                                    notifyItemRemoved(position);
+
+
+                                                }else if (status.equals("601")){
+
+                                                    Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
+                                                    return;
+                                                }else if (status.equals("602")){
+
+                                                    Toast.makeText(DownloadActivity.this, errMsg, Toast.LENGTH_SHORT).show();
+                                                    return;
+
+                                                }else {
+                                                    Toast.makeText(DownloadActivity.this, "发生未知错误！", Toast.LENGTH_SHORT).show();
+
+                                                }
 
 
 
-                        }
+
+                                            }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
