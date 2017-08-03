@@ -8,12 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -52,27 +50,32 @@ public class BluetoothActivity extends AppCompatActivity {
         setContentView(com.google.blockly.android.R.layout.bluetooth_layout);
         judgeHaveBluetooth();
         init();
-        if (mBluetoothAdapter != null) {
-            initBroadcast();//搜索设备结果的广播
+        if (!judgeHaveBluetooth()) {
+            finish();
+            return;
         }
+        initBroadcast();//搜索设备结果的广播
+
         requestBluetoothPower();
     }
 
     //判断是否支持蓝牙并初始化BluetoothAdapter
-    private void judgeHaveBluetooth() {
+    private boolean judgeHaveBluetooth() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //判断设备是否支持蓝牙，不支持就没有后续操作了
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "你的设备不支持蓝牙,无法连接和传输(｡•́︿•̀｡)", Toast.LENGTH_LONG).show();
+            return false;
         }
+        return true;
     }
 
     private void init() {
 
-        btBack= (Button) findViewById(R.id.back_bt);
+        btBack = (Button) findViewById(R.id.back_bt);
         btRestart = (Button) findViewById(com.google.blockly.android.R.id.bt_reStart);
         recyclerView = (RecyclerView) findViewById(com.google.blockly.android.R.id.list_source);
-        progressBar= (ProgressBar) findViewById(com.google.blockly.android.R.id.progress_bar);
+        progressBar = (ProgressBar) findViewById(com.google.blockly.android.R.id.progress_bar);
 
 
         //重新扫描
@@ -89,10 +92,10 @@ public class BluetoothActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.VISIBLE);
                         mBluetoothAdapter.cancelDiscovery();
                         mBluetoothAdapter.startDiscovery();
-                        if(timer!=null){
-                            timer.isUseful=false;
+                        if (timer != null) {
+                            timer.isUseful = false;
                         }
-                        timer=new Timer(20000);
+                        timer = new Timer(20000);
                         timer.start();
                     } else {
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -116,17 +119,17 @@ public class BluetoothActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 
-        handler=new Handler(){
+        handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                switch (msg.what){
+                switch (msg.what) {
                     case 1:
                         progressBar.setVisibility(View.GONE);
                         mBluetoothAdapter.cancelDiscovery();
                         break;
                     case 456:
-                        Toast.makeText(BluetoothActivity.this, msg.obj.toString()+"", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BluetoothActivity.this, msg.obj.toString() + "", Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
@@ -138,17 +141,11 @@ public class BluetoothActivity extends AppCompatActivity {
 
     //请求应用蓝牙所需权限
     public void requestBluetoothPower() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            } else {
+
                 ActivityCompat.requestPermissions(this,
                         new String[]{
                                 Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            }
-        }
+
     }
 
     private void initBroadcast() {
@@ -182,10 +179,10 @@ public class BluetoothActivity extends AppCompatActivity {
 
                             mBluetoothAdapter.startDiscovery();//开始扫描
                             progressBar.setVisibility(View.VISIBLE);
-                            if(timer!=null){
-                                timer.isUseful=false;
+                            if (timer != null) {
+                                timer.isUseful = false;
                             }
-                            timer=new Timer(20000);
+                            timer = new Timer(20000);
                             timer.start();
                             //Toast.makeText(context, "打开", Toast.LENGTH_SHORT).show();
                             break;
@@ -232,12 +229,14 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     }
 
-    class Timer extends Thread{
+    class Timer extends Thread {
         int time;
-        boolean isUseful=true;
-        public Timer(int time){
-            this.time=time;
+        boolean isUseful = true;
+
+        public Timer(int time) {
+            this.time = time;
         }
+
         @Override
         public void run() {
             super.run();
@@ -246,10 +245,11 @@ public class BluetoothActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(isUseful){
-            Message msg=new Message();
-            msg.what=1;
-            handler.sendMessage(msg);}
+            if (isUseful) {
+                Message msg = new Message();
+                msg.what = 1;
+                handler.sendMessage(msg);
+            }
         }
     }
 
