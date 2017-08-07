@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     public static String token;
-    private final String url_login = "http://120.77.254.208:3000/userLogin";
+    private final String url_login = "http://120.77.254.208:3000/android/userLogin";
 
     private boolean choseSavePass;
     private boolean choseAutoLogin;
