@@ -74,8 +74,8 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
 
 
-    private final String url_upload = "http://120.77.254.208:3000/AndrUpload";
-    private final String url_filelistrequest = "http://120.77.254.208:3000/AndrGetList";
+    private final String url_upload = "http://120.77.254.208:3000/android/AndrUpload";
+    private final String url_filelistrequest = "http://120.77.254.208:3000/android/AndrGetList";
     protected BlocklyActivityHelper mBlocklyActivityHelper;
 
     private static int flags = 0;

@@ -39,8 +39,8 @@ import java.util.List;
 
 public class DownloadActivity extends AppCompatActivity {
 
-    private final String url_delete = "http://120.77.254.208:3000/AndrDelete";
-    private final String url_download = "http://120.77.254.208:3000/AndrDownload";
+    private final String url_delete = "http://120.77.254.208:3000/android/AndrDelete";
+    private final String url_download = "http://120.77.254.208:3000/android/AndrDownload";
     private RecyclerView recyclerView;
     private Button btReturn;
     private Intent intent;
@@ -393,6 +393,8 @@ public class DownloadActivity extends AppCompatActivity {
 
         return fileContent;
     }
+
+
 
 
 }
