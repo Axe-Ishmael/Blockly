@@ -16,9 +16,12 @@
 package com.google.blockly.android.demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,12 +47,12 @@ import com.google.blockly.android.AbstractBlocklyActivity;
 import com.google.blockly.android.BlocklyActivityHelper;
 import com.google.blockly.android.codegen.CodeGenerationRequest;
 import com.google.blockly.android.codegen.LanguageDefinition;
-import com.google.blockly.android.demo.Bluetooth.BluetoothActivity;
-import com.google.blockly.android.demo.Bluetooth.ConnectThread;
+import com.google.blockly.android.demo.Bluetooth.ConnectBluetoothThread;
 import com.google.blockly.android.demo.Post_receive.fileContent;
 import com.google.blockly.android.demo.Post_receive.fileListContent;
 import com.google.blockly.android.demo.Post_receive.getListReceive;
 import com.google.blockly.android.demo.Post_receive.uploadReceive;
+import com.google.blockly.android.demo.Wifi.ConnectionWifiThread;
 import com.google.blockly.model.DefaultBlocks;
 
 import org.json.JSONArray;
@@ -59,7 +62,6 @@ import org.json.JSONObject;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,15 +112,35 @@ public class LuaActivity extends AbstractBlocklyActivity {
 
     private String mNoCodeText;
 
-    private Handler handler=new Handler(){
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what==789){
-                Toast.makeText(LuaActivity.this, msg.obj.toString()+"", Toast.LENGTH_SHORT).show();
+            switch (msg.what) {
+                case 1:
+                    Toast.makeText(LuaActivity.this, "传输成功", Toast.LENGTH_SHORT).show();
+                    break;
+                case 2:
+                    Toast.makeText(LuaActivity.this, "传输失败", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
             }
         }
     };
+
+    Message msg = new Message();
+
+//注释代码用于蓝牙
+//    private Handler handler=new Handler(){
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            if(msg.what==789){
+//                Toast.makeText(LuaActivity.this, msg.obj.toString()+"", Toast.LENGTH_SHORT).show();
+//            }
+//        }
+//    };
 
 
     CodeGenerationRequest.CodeGeneratorCallback mCodeGeneratorCallback =
@@ -132,48 +154,54 @@ public class LuaActivity extends AbstractBlocklyActivity {
                             Log.d("LuaLanguage", LuaLanguage);
                             mGeneratedTextView.setText(generatedCode);
                             updateTextMinWidth();
+                            wifiOpen();
+                            byte[] b = LuaLanguage.getBytes();
+                            ConnectionWifiThread connection = new ConnectionWifiThread(b, handler);
+                            connection.start();
 
-                            //当文件已经保存时，生成lua代码
+                            //当文件已经保存时，生成lua代码,蓝牙传输(被注释部分)
+//
+//                            if (ConnectBluetoothThread.mmSocket == null || !ConnectBluetoothThread.mmSocket.isConnected()) {
+//
+//                                Toast.makeText(LuaActivity.this, "请在本应用中选择并连接蓝牙", Toast.LENGTH_SHORT).show();
+//                                Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
+//                                startActivity(intent);
+//
+//                            } else {
+//                                OutputStream out = null;
+//                                try {
+//                                    out = ConnectBluetoothThread.mmSocket.getOutputStream();
+//                                    byte[] b = LuaLanguage.getBytes();
+//                                    out.write(b);
+//                                    Toast.makeText(LuaActivity.this, "传输成功", Toast.LENGTH_SHORT).show();
+//                                } catch (IOException e) {
+//                                    e.printStackTrace();
+//                                    Toast.makeText(LuaActivity.this, "传输失败", Toast.LENGTH_SHORT).show();
+//                                    AlertDialog.Builder dialog = new AlertDialog.Builder
+//                                            (LuaActivity.this);
+//                                    dialog.setTitle("传输失败了");
+//                                    dialog.setMessage("可能是蓝牙连接断开导致，要不试试重新连接蓝牙");
+//                                    dialog.setPositiveButton("重连蓝牙", new DialogInterface.
+//                                            OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
+//                                            startActivity(intent);
+//                                        }
+//                                    });
+//                                    dialog.setNegativeButton("取消", new DialogInterface.
+//                                            OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                        }
+//                                    });
+//                                    dialog.show();
+//                                }
+//
+//
+//                            }
 
-                            if (ConnectThread.mmSocket == null || !ConnectThread.mmSocket.isConnected()) {
 
-                                Toast.makeText(LuaActivity.this, "请在本应用中选择并连接蓝牙", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
-                                startActivity(intent);
-
-                            } else {
-                                OutputStream out = null;
-                                try {
-                                    out = ConnectThread.mmSocket.getOutputStream();
-                                    byte[] b = LuaLanguage.getBytes();
-                                    out.write(b);
-                                    Toast.makeText(LuaActivity.this, "传输成功", Toast.LENGTH_SHORT).show();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    Toast.makeText(LuaActivity.this, "传输失败", Toast.LENGTH_SHORT).show();
-                                    AlertDialog.Builder dialog = new AlertDialog.Builder
-                                            (LuaActivity.this);
-                                    dialog.setTitle("传输失败了");
-                                    dialog.setMessage("可能是蓝牙连接断开导致，要不试试重新连接蓝牙");
-                                    dialog.setPositiveButton("重连蓝牙", new DialogInterface.
-                                            OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Intent intent = new Intent(LuaActivity.this, BluetoothActivity.class);
-                                            startActivity(intent);
-                                        }
-                                    });
-                                    dialog.setNegativeButton("取消", new DialogInterface.
-                                            OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    });
-                                    dialog.show();
-                                }
-
-
-                            }
                         }
                     });
                 }
@@ -699,10 +727,10 @@ public class LuaActivity extends AbstractBlocklyActivity {
                 while(true){
                     byte[] buffer = new byte[1024];  // buffer store for the stream
                     try {
-                        if (ConnectThread.mmSocket != null && ConnectThread.mmSocket.isConnected()) {
+                        if (ConnectBluetoothThread.mmSocket != null && ConnectBluetoothThread.mmSocket.isConnected()) {
 
                             // Read from the InputStream
-                            ConnectThread.mmSocket.getInputStream().read(buffer);
+                            ConnectBluetoothThread.mmSocket.getInputStream().read(buffer);
                             // Send the obtained bytes to the UI activity
                             String result = new String(buffer);
                             Message msg=new Message();
@@ -732,6 +760,42 @@ public class LuaActivity extends AbstractBlocklyActivity {
         }
     }
 
+
+    private void wifiOpen(){
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);//获取WifiManager
+        if (!wifiManager.isWifiEnabled()) {
+            Toast.makeText(this, "请先打开wifi", Toast.LENGTH_SHORT).show();
+            wifiManager.setWifiEnabled(true);
+        }
+
+        WifiInfo wifiinfo = wifiManager.getConnectionInfo();
+
+        String str=wifiinfo.getSSID();
+        str=str.substring(1,str.length()-1);
+        if(!str.equals("11111111")){
+            AlertDialog.Builder dialog = new AlertDialog.Builder
+                    (LuaActivity.this);
+            dialog.setTitle("网络连接错误(｡•́︿•̀｡)");
+            dialog.setMessage("请连接Wifi：11111111\n密码：8个1");
+            dialog.setPositiveButton("是", new DialogInterface.
+                    OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent();
+                    intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
+                    startActivity(intent);
+                }
+            });
+            dialog.setNegativeButton("暂不需要传输", new DialogInterface.
+                    OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            dialog.show();
+        }
+    }
 
 
 
