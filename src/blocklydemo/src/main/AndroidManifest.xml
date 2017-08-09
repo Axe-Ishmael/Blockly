@@ -18,10 +18,8 @@
     package="com.google.blockly.android.demo">
 
 
-
-
-
-
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <application
         android:hardwareAccelerated="false"
         android:name="com.google.blockly.MyApplication"

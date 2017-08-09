@@ -10,16 +10,16 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.UUID;
 
-public   class ConnectThread extends Thread {
+public   class ConnectBluetoothThread extends Thread {
     public static boolean isConnect=false;
     public static BluetoothSocket mmSocket=null;
     private final BluetoothDevice mmDevice;
     BluetoothAdapter mBluetoothAdapter;
-    private static final String TAG = "ConnectThread";
+    private static final String TAG = "ConnectBluetoothThread";
     Handler handler;
     Message msg;
 
-    public ConnectThread(BluetoothDevice device, BluetoothAdapter mBluetoothAdapter, Handler handler) {
+    public ConnectBluetoothThread(BluetoothDevice device, BluetoothAdapter mBluetoothAdapter, Handler handler) {
         // Use a temporary object that is later assigned to mmSocket,
         // because mmSocket is final
         this.mBluetoothAdapter=mBluetoothAdapter;
@@ -35,7 +35,7 @@ public   class ConnectThread extends Thread {
             String uuid="00001101-0000-1000-8000-00805f9b34fb";
             tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(uuid));
         } catch (IOException e) {
-            Log.d(TAG, "ConnectThread: 初始化uuid错误");
+            Log.d(TAG, "ConnectBluetoothThread: 初始化uuid错误");
         }
         mmSocket = tmp;
     }

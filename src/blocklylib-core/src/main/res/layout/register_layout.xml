@@ -30,7 +30,6 @@
             android:layout_centerInParent="true"
             android:textSize="18sp"
             android:textColor="@color/white"
-            android:background="@drawable/bt_selector"
             android:text="注册"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

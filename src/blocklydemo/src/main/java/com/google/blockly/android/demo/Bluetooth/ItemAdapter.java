@@ -31,7 +31,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
     Context context;
     BluetoothAdapter bluetoothAdapter;
     ProgressDialog progressDialog;
-    ConnectThread connectThread;
+    ConnectBluetoothThread connectBluetoothThread;
     boolean isConnecting=false;
     Handler handler=new Handler(){
         @Override
@@ -95,8 +95,8 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 int position=holder.getLayoutPosition();
-                connectThread=new ConnectThread(deviceList.get(position),bluetoothAdapter,handler);
-                connectThread.start();
+                connectBluetoothThread =new ConnectBluetoothThread(deviceList.get(position),bluetoothAdapter,handler);
+                connectBluetoothThread.start();
                 progressDialog = new ProgressDialog
                         (context);
                 progressDialog.setTitle("正在连接蓝牙");
